@@ -157,17 +157,8 @@ terraform destroy
 ```text
 .
 ├── main.tf
-├── variables.tf
-├── outputs.tf
-├── provider.tf
-├── diagrams
-│   └── architecture.png
-├── screenshots
-│   ├── vpc.png
-│   ├── alb.png
-│   ├── autoscaling.png
-│   └── ec2.png
-└── README.md
+├── input.tf
+├── output.tf
 ```
 
 ---
