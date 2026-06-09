@@ -8,7 +8,8 @@ This project demonstrates the provisioning of a highly available AWS infrastruct
 
 ## Architecture
 
-![Architecture Diagram](./diagrams/architecture.png)
+<img width="1536" height="1024" alt="arch" src="https://github.com/user-attachments/assets/1d9c83c9-0c20-430d-869b-ba4f7c5e8b68" />
+
 
 ### Key Components
 
