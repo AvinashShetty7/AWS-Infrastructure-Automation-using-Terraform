@@ -1,9 +1,7 @@
-provider "aws" {
-  region = "ap-south-1"
-}
+
 
 resource "aws_vpc" "mydemovpc" {
-  cidr_block       = "10.0.0.0/16"
+  cidr_block       = var.vpc_range
   instance_tenancy = "default"
 
   tags = {
@@ -13,7 +11,7 @@ resource "aws_vpc" "mydemovpc" {
 
 resource "aws_subnet" "publicsubnet1" {
   vpc_id     = aws_vpc.mydemovpc.id
-  cidr_block = "10.0.0.0/24"
+  cidr_block = var.cidr_public1
   availability_zone = "ap-south-1a"
   map_public_ip_on_launch = "true"
 
@@ -24,7 +22,7 @@ resource "aws_subnet" "publicsubnet1" {
 
 resource "aws_subnet" "publicsubnet2" {
   vpc_id     = aws_vpc.mydemovpc.id
-  cidr_block = "10.0.1.0/24"
+  cidr_block = var.cidr_public2
   availability_zone = "ap-south-1b"
   map_public_ip_on_launch = "true"
 
@@ -35,7 +33,7 @@ resource "aws_subnet" "publicsubnet2" {
 
 resource "aws_subnet" "privatesubnet1" {
   vpc_id     = aws_vpc.mydemovpc.id
-  cidr_block = "10.0.2.0/24"
+  cidr_block = var.cidr_private1
   availability_zone = "ap-south-1a"
 
   tags = {
@@ -45,7 +43,7 @@ resource "aws_subnet" "privatesubnet1" {
 
 resource "aws_subnet" "privatesubnet2" {
   vpc_id     = aws_vpc.mydemovpc.id
-  cidr_block = "10.0.3.0/24"
+  cidr_block = var.cidr_private2
   availability_zone = "ap-south-1b"
 
   tags = {
@@ -206,11 +204,11 @@ resource "aws_security_group" "allow_tls" {
 
 # ------------  EC2 cration JUMP host ---------------------------
 resource "aws_instance" "jumphost" {
-  ami                     = "ami-05d2d839d4f73aafb"
-  instance_type           = "t3.micro"
+  ami                     = var.ami_for_jumphost
+  instance_type           = var.instance_type_for_jumphost
   subnet_id = aws_subnet.publicsubnet1.id
   vpc_security_group_ids = [aws_security_group.allow_tls.id]
-  key_name = "iam_avinash"
+  key_name =var.key_name
   tags = {
     Name = "bastian"
   }
@@ -220,10 +218,10 @@ resource "aws_instance" "jumphost" {
 
 resource "aws_launch_template" "demotamplate" {
   name_prefix   = "Demotemplate"
-  image_id      = "ami-05d2d839d4f73aafb"
-  instance_type = "t3.micro"
+  image_id      = var.ami
+  instance_type = var.instance_type
   vpc_security_group_ids = [ aws_security_group.allow_tls.id ]
-  key_name = "iam_avinash"
+  key_name = var.key_name
 }
 
 resource "aws_autoscaling_group" "bar" {
@@ -261,7 +259,7 @@ resource "aws_lb_target_group" "mydemoTG" {
 
 resource "aws_lb" "mydemoLB" {
   name               = "mydemoLB"
-  load_balancer_type = "application"
+  load_balancer_type = var.load_balancer_type
   security_groups    = [aws_security_group.allow_tls.id]
   subnets            = [aws_subnet.publicsubnet1.id ,aws_subnet.publicsubnet2.id]
 
