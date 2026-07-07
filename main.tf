@@ -222,6 +222,8 @@ resource "aws_launch_template" "demotamplate" {
   instance_type = var.instance_type
   vpc_security_group_ids = [ aws_security_group.allow_tls.id ]
   key_name = var.key_name
+  user_data = file("${path.module}/userdata.sh")
+  
 }
 
 resource "aws_autoscaling_group" "bar" {
