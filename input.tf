@@ -41,3 +41,6 @@ variable "instance_type" {
 variable "load_balancer_type" {
   default = "application"
 }
+variable "targetgroup_port" {
+  default = 80
+}

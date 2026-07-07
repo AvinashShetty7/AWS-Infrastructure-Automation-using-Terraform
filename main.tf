@@ -222,8 +222,8 @@ resource "aws_launch_template" "demotamplate" {
   instance_type = var.instance_type
   vpc_security_group_ids = [ aws_security_group.allow_tls.id ]
   key_name = var.key_name
-  user_data = file("${path.module}/userdata.sh")
-  
+  user_data = filebase64("${path.module}/userdata.sh")
+
 }
 
 resource "aws_autoscaling_group" "bar" {
@@ -238,13 +238,21 @@ resource "aws_autoscaling_group" "bar" {
   launch_template {
     id      = aws_launch_template.demotamplate.id
   }
+
+
+  depends_on = [
+    aws_route_table_association.privatesubnet1Association,
+    aws_route_table_association.privatesubnet2Association,
+    aws_route_table_association.publicsubnet1Association,
+    aws_route_table_association.publicsubnet2Association
+  ] 
 }
 
 # ------------ TARGET GROUPS ---------------------------
 
 resource "aws_lb_target_group" "mydemoTG" {
   name     = "my-target-group"
-  port     = 8000
+  port     = var.targetgroup_port
   protocol = "HTTP"
   vpc_id   = aws_vpc.mydemovpc.id
 
@@ -282,8 +290,3 @@ resource "aws_lb_listener" "mydemolblisterner" {
     target_group_arn = aws_lb_target_group.mydemoTG.arn
   }
 }
-
-
-
-
-
